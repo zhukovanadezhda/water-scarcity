@@ -1,5 +1,7 @@
 # 🚱 Water Shortage Prediction at Hi!ckathon 2024
 
+![hi-paris](assets/hiparis.png)
+
 ## 🔍 Overview
 This repository contains the work developed by our team for the [Hi!ckathon](https://www.hi-paris.fr/hickathon/), a competition focused on AI and sustainability organized by Hi! PARIS - the Center on Data Analytics and Artificial Intelligence for Science, Business and Society created by Institut Polytechnique de Paris and HEC Paris and joined by Centre Inria de Saclay. The goal of our project was to build an AI model capable of predicting groundwater levels for French piezometric stations, with a special emphasis on the summer months. Our model uses a variety of data sources, including piezometric data, weather patterns, hydrology, water withdrawal, and economic data, to make accurate predictions. 
 
