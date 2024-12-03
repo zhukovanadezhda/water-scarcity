@@ -139,6 +139,9 @@ def create_features(df):
     df['year'] = df['meteo_date'].dt.year
     df['hour'] = df['meteo_date'].dt.hour
     
+    # Drop the 'meteo_date' column
+    df.drop(columns=['meteo_date'], inplace=True)
+    
     # Lag features (example: lag of 1 year)
     df['meteo_temperature_avg_lag_1'] = df['meteo_temperature_avg'].shift(
         250 * 365
