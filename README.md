@@ -20,6 +20,42 @@ The primary objective of the project is to:
 
 ## 🎯 Our solution
 
+### Feature Engineering
+
+| **Feature**                          | **Description**                                                                                                                                             |
+|--------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `day`                                | Extracted day from the `meteo_date`. Represents the day of the month.                                                                                      |
+| `month`                              | Extracted month from the `meteo_date`. Represents the month of the year.                                                                                   |
+| `quarter`                            | Extracted quarter from the `meteo_date`. Represents which quarter of the year (1 to 4).                                                                    |
+| `year`                               | Extracted year from the `meteo_date`. Represents the year of the data point.                                                                                |
+| `day_sin`                            | Sin transformation of the `day` feature. Converts the day of the month into a periodic value for modeling cyclical behavior.                               |
+| `day_cos`                            | Cos transformation of the `day` feature. This, alongside `day_sin`, captures the periodicity of the day of the month.                                        |
+| `month_sin`                          | Sin transformation of the `month` feature. Converts the month into a periodic value to model cyclical patterns (seasons, etc.).                            |
+| `month_cos`                          | Cos transformation of the `month` feature. Works together with `month_sin` to capture the cyclical nature of months.                                        |
+| `quarter_sin`                        | Sin transformation of the `quarter` feature. Captures the cyclic behavior of the four seasons in a year.                                                    |
+| `quarter_cos`                        | Cos transformation of the `quarter` feature. Works together with `quarter_sin` to capture the periodic nature of quarters.                                 |
+| `meteo_temperature_avg_lag_1`        | Lag feature representing the average temperature from the previous year. This helps capture long-term temperature trends.                                    |
+| `meteo_rain_height_lag_1`            | Lag feature representing the rainfall from the previous year. Similar to temperature lag, this captures long-term precipitation trends.                      |
+| `meteo_temperature_avg_rolling_mean_7` | Rolling mean of the average temperature over a 7-day window. This smooths out short-term fluctuations and helps capture medium-term temperature trends.      |
+| `meteo_rain_height_rolling_sum_7`    | Rolling sum of the rainfall over a 7-day window. Helps to capture cumulative rainfall over a short period.                                                   |
+| `temperature_wind_interaction`       | Interaction feature between average temperature and wind speed. Helps to capture the joint effect of temperature and wind on environmental conditions.        |
+| `humidity_rain_interaction`          | Interaction feature between humidity and rainfall. Helps to understand how the two variables interact and affect the environment together.                  |
+| `temperature_range`                  | Difference between the maximum and minimum temperature. Captures the temperature variability within a day or over time.                                      |
+| `evapotranspiration_to_rain_ratio`   | Ratio of evapotranspiration to rainfall. Helps understand how the amount of water evaporated compares to the rainfall, influencing soil moisture.             |
+| `altitude_difference`                | Difference between the piezo station altitude and the meteorological station altitude. Helps to capture geographic effects on environmental conditions.       |
+| `cumulative_rainfall_30_days`        | Rolling sum of rainfall over a 30-day window. Captures long-term trends in precipitation.                                                                  |
+
+
+## 📊 Results
+
+| Model        | Accuracy       | F1 Score       | Precision      | Recall         | AUC-ROC        |
+|--------------|----------------|----------------|----------------|----------------|----------------|
+| **Random Forest** | 0.7149 ± 0.0004 | 0.7212 ± 0.0005 | 0.7231 ± 0.0010 | 0.7199 ± 0.0001 | 0.9222 ± 0.0003 |
+| **XGBoost**  | 0.6261 ± 0.0014 | 0.6349 ± 0.0014 | 0.6352 ± 0.0013 | 0.6349 ± 0.0016 | 0.8821 ± 0.0007 |
+| **LightGBM** | 0.5851 ± 0.0014 | 0.5928 ± 0.0015 | 0.5925 ± 0.0015 | 0.5940 ± 0.0015 | 0.8592 ± 0.0010 |
+| **AdaBoost** | 0.3390 ± 0.0020 | 0.3411 ± 0.0025 | 0.3432 ± 0.0032 | 0.3408 ± 0.0018 | 0.6756 ± 0.0007 |
+
+
 ## 🖥️ Run the code
 
 To set up the environment and install the required dependencies, use the following commands:
