@@ -1,6 +1,6 @@
 # 🚱 Water Shortage Prediction at Hi!ckathon 2024
 
-![hi-paris](assets/hiparis.png)
+![hi-paris](assets/hiparis.jpg)
 
 ## 🔍 Overview
 This repository contains the work developed by our team for the [Hi!ckathon](https://www.hi-paris.fr/hickathon/), a competition focused on AI and sustainability organized by Hi! PARIS - the Center on Data Analytics and Artificial Intelligence for Science, Business and Society created by Institut Polytechnique de Paris and HEC Paris and joined by Centre Inria de Saclay. The goal of our project was to build an AI model capable of predicting groundwater levels for French piezometric stations, with a special emphasis on the summer months. Our model uses a variety of data sources, including piezometric data, weather patterns, hydrology, water withdrawal, and economic data, to make accurate predictions. 
@@ -18,6 +18,35 @@ The primary objective of the project is to:
 
 ![Team Picture](assets/team.png)
 
+## 🎯 Our solution
+
+## 🖥️ Run the code
+
+To set up the environment and install the required dependencies, use the following commands:
+
+```bash
+conda env create -f environment.yml
+conda activate water-scarcity
+```
+
+Then, clone the repository and navigate to the project folder:
+
+```bash
+git clone git@github.com:zhukovanadezhda/water-scarcity.git
+cd water-scarcity
+```
+
+### Preprocessing
+
+Download the data to the `data` folder (contact us to get the data). Then run this command to get the train and test datasets:
+
+```bash
+python scripts/preprocess_data.py --path <data_file_path> [--is_train]
+```
+```bash
+    --path        Path to the CSV data file (training or test).
+    --is_train    Flag to indicate training data (optional).
+```
 
 ## 🤝 Acknowledgments
 
