@@ -18,6 +18,35 @@ The primary objective of the project is to:
 
 ![Team Picture](assets/team.png)
 
+## 🎯 Our solution
+
+## 🖥️ Run the code
+
+To set up the environment and install the required dependencies, use the following commands:
+
+```bash
+conda env create -f environment.yml
+conda activate water-scarcity
+```
+
+Then, clone the repository and navigate to the project folder:
+
+```bash
+git clone git@github.com:zhukovanadezhda/water-scarcity.git
+cd water-scarcity
+```
+
+### Preprocessing
+
+Download the data to the `data` folder (contact us to get the data). Then run this command to get the train and test datasets:
+
+```bash
+python scripts/preprocess_data.py --path <data_file_path> [--is_train]
+```
+```bash
+    --path        Path to the CSV data file (training or test).
+    --is_train    Flag to indicate training data (optional).
+```
 
 ## 🤝 Acknowledgments
 
