@@ -20,21 +20,25 @@ Functions:
 Usage:
     To run the script, simply execute it from the command line:
     
-    python preprocess_data.py --path <data_file_path> --is_train
+    python preprocess_data.py --path <data_file_path> [--is_train]
 
     --path: Path to the CSV data file (training or test).
     --is_train: Flag to indicate training data (with target column).
     
-    It processes both training and test data, applies filtering and imputation for 
-    missing values, creates features, and prepares the data for model training.
+    It processes both training and test data, applies filtering and imputation 
+    for missing values, and creates features.
 """
 
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 import argparse
 
 
-def filter_and_impute_missing_values(X, missing_threshold=0.3):
+def filter_and_impute_missing_values(
+    X: pd.DataFrame,
+    missing_threshold: float = 0.8
+    ) -> pd.DataFrame:
     """
     Filters out columns with more missing values than the specified threshold 
     and imputes missing values with the median for numeric columns.
@@ -42,7 +46,7 @@ def filter_and_impute_missing_values(X, missing_threshold=0.3):
     Parameters:
     - X (pd.DataFrame): The feature DataFrame.
     - missing_threshold (float): The threshold for the maximum allowed missing 
-                                 values in a column (default is 0.3).
+                                 values in a column (default is 0.8).
     
     Returns:
     - X (pd.DataFrame): The filtered and imputed DataFrame.
@@ -58,7 +62,12 @@ def filter_and_impute_missing_values(X, missing_threshold=0.3):
     return X
 
 
-def process_data_in_chunks(path, n, columns_to_exclude=None, is_train=True):
+def process_data_in_chunks(
+    path: str, 
+    n: int,
+    columns_to_exclude: list = None,
+    is_train: bool = True
+    ) -> (pd.DataFrame, pd.Series):
     """
     Processes a CSV file in chunks, selects every n-th row,
     converts `meteo_date` to datetime, removes categorical variables, 
@@ -118,7 +127,7 @@ def process_data_in_chunks(path, n, columns_to_exclude=None, is_train=True):
     return X, y
 
 
-def create_features(df):
+def create_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Creates new features from the existing DataFrame.
     Features include: date-based features, lag features, rolling averages, 
@@ -133,16 +142,23 @@ def create_features(df):
     """
     
     # Extract date-based features
-    df['day_of_week'] = df['meteo_date'].dt.dayofweek
+    df['day'] = df['meteo_date'].dt.day
     df['month'] = df['meteo_date'].dt.month
     df['quarter'] = df['meteo_date'].dt.quarter
     df['year'] = df['meteo_date'].dt.year
-    df['hour'] = df['meteo_date'].dt.hour
     
     # Drop the 'meteo_date' column
     df.drop(columns=['meteo_date'], inplace=True)
     
-    # Lag features (example: lag of 1 year)
+    # sin/cos transformation of date-based features
+    df['day_sin'] = df['day'].apply(lambda x: np.sin(2 * np.pi * x / 31))
+    df['day_cos'] = df['day'].apply(lambda x: np.cos(2 * np.pi * x / 31))
+    df['month_sin'] = df['month'].apply(lambda x: np.sin(2 * np.pi * x / 12))
+    df['month_cos'] = df['month'].apply(lambda x: np.cos(2 * np.pi * x / 12))
+    df['quarter_sin'] = df['quarter'].apply(lambda x: np.sin(2 * np.pi * x / 4))
+    df['quarter_cos'] = df['quarter'].apply(lambda x: np.cos(2 * np.pi * x / 4))
+    
+    # Lag features (lag of 1 year)
     df['meteo_temperature_avg_lag_1'] = df['meteo_temperature_avg'].shift(
         250 * 365
     )
@@ -220,7 +236,7 @@ def main():
         "piezo_producer_name", "meteo_name", "meteo_id", "hydro_station_code",
         "prelev_structure_code_0", "prelev_structure_code_1", 
         "prelev_structure_code_2", "piezo_measure_nature_code", 
-        "meteo_DRR", "piezo_measure_nature_name"
+        "meteo_DRR", "piezo_measure_nature_name", "hydro_method_code"
     ]
     
     # Process the data in chunks
