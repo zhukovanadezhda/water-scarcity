@@ -207,6 +207,48 @@ def create_features(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
+def scale_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Scales the features in the DataFrame using the provided StandardScaler.
+    
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame containing features to scale.
+    
+    Returns:
+    - df (pd.DataFrame): The DataFrame with scaled features.
+    """
+    # Select only numeric columns for scaling
+    scaler = StandardScaler()
+    numeric_cols = df.select_dtypes(include=['number']).columns
+    df[numeric_cols] = scaler.transform(df[numeric_cols])
+    
+    return df
+
+def encode_lables(y_train: pd.DataFrame) -> pd.DataFrame:
+    """
+    Encodes categorical features in the DataFrame using one-hot encoding.
+    
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame containing features to encode.
+    
+    Returns:
+    - df (pd.DataFrame): The DataFrame with encoded categorical features.
+    """
+    # Extract the target column
+    y_train = y_train['piezo_groundwater_level_category']
+
+    # Map the target labels to numerical values
+    mapping = {
+        'Very Low': 0,
+        'Low': 1,
+        'Average': 2,
+        'High': 3,
+        'Very High': 4
+    }
+    y_train = y_train.map(mapping)
+
+    return y_train
+
 
 def main():
     """
@@ -252,6 +294,13 @@ def main():
 
     # Apply feature engineering
     X = create_features(X)
+
+    # Scale features
+    X = scale_features(X)
+
+    # Encode labels
+    if args.is_train:
+        y = encode_lables(y)
     
     # Save the processed data to CSV files
     if args.is_train:
