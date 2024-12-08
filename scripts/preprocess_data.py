@@ -33,6 +33,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import argparse
+from sklearn.preprocessing import StandardScaler
 
 
 def filter_and_impute_missing_values(
@@ -220,7 +221,7 @@ def scale_features(df: pd.DataFrame) -> pd.DataFrame:
     # Select only numeric columns for scaling
     scaler = StandardScaler()
     numeric_cols = df.select_dtypes(include=['number']).columns
-    df[numeric_cols] = scaler.transform(df[numeric_cols])
+    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
     
     return df
 
@@ -234,8 +235,6 @@ def encode_lables(y_train: pd.DataFrame) -> pd.DataFrame:
     Returns:
     - df (pd.DataFrame): The DataFrame with encoded categorical features.
     """
-    # Extract the target column
-    y_train = y_train['piezo_groundwater_level_category']
 
     # Map the target labels to numerical values
     mapping = {

@@ -1,25 +1,46 @@
+"""
+This script trains a Convolutional Neural Network (CNN) model. 
+
+It uses 3-fold cross-validation. The training features and labels are loaded 
+from separate CSV files. The model is built using the Keras library and trained
+using the training data. The script then evaluates the model using accuracy, 
+F1 score, precision, recall, and ROC AUC metrics.
+
+Example:
+    $ python train_cnn.py --X_path data/X_train.csv --y_path data/y_train.csv
+    
+Arguments:
+    --X_path (str): Path to the CSV file containing the training features.
+    --y_path (str): Path to the CSV file containing the training labels.
+"""
+
 import logging
 import numpy as np
 import pandas as pd
 import argparse
 from keras.models import Sequential
-from keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, BatchNormalization
+from keras.layers import (Conv1D, MaxPooling1D, Flatten, Dense, 
+                          Dropout, BatchNormalization)
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.utils import to_categorical
 from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (accuracy_score, f1_score, precision_score, 
+                             recall_score, roc_auc_score)
 
 
 # Set up logging for the script
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+    )
 
 
-def build_model(input_shape):
+def build_model(input_shape: tuple) -> Sequential:
     """
     Builds and compiles the CNN model.
 
     Args:
-        input_shape (tuple): The shape of the input data (e.g., (num_features, 1)).
+        input_shape (tuple): The shape of the input data.
 
     Returns:
         model (keras.Model): Compiled CNN model.
@@ -29,7 +50,8 @@ def build_model(input_shape):
     model = Sequential()
 
     # First Conv1D layer
-    model.add(Conv1D(64, kernel_size=7, activation='relu', input_shape=input_shape))
+    model.add(Conv1D(64, kernel_size=7, activation='relu', 
+                     input_shape=input_shape))
     model.add(BatchNormalization())
     model.add(MaxPooling1D(pool_size=2))
     model.add(Dropout(0.3))
@@ -53,14 +75,22 @@ def build_model(input_shape):
     model.add(Dense(5, activation='softmax'))
 
     # Compile the model
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', 
+                  loss='categorical_crossentropy', 
+                  metrics=['accuracy'])
 
     logging.info("CNN model built and compiled successfully.")
 
     return model
 
 
-def train_and_evaluate_fold(model, X_train_fold, y_train_fold, X_val_fold, y_val_fold):
+def train_and_evaluate_fold(
+    model: Sequential,
+    X_train_fold: np.ndarray,
+    y_train_fold: np.ndarray,
+    X_val_fold: np.ndarray, 
+    y_val_fold: np.ndarray
+) -> tuple:
     """
     Trains and evaluates the model for a single fold of cross-validation.
 
@@ -77,8 +107,13 @@ def train_and_evaluate_fold(model, X_train_fold, y_train_fold, X_val_fold, y_val
     logging.info("Training and evaluating the model for the fold.")
 
     # Callbacks for early stopping and learning rate reduction
-    early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-    lr_scheduler = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=1e-6)
+    early_stop = EarlyStopping(monitor='val_loss', 
+                               patience=5, 
+                               restore_best_weights=True)
+    lr_scheduler = ReduceLROnPlateau(monitor='val_loss', 
+                                     factor=0.5, 
+                                     patience=3, 
+                                     min_lr=1e-6)
 
     # Train the model
     model.fit(X_train_fold, y_train_fold, epochs=150, batch_size=128, 
@@ -91,18 +126,31 @@ def train_and_evaluate_fold(model, X_train_fold, y_train_fold, X_val_fold, y_val
     y_val_classes = np.argmax(y_val_fold, axis=1)
 
     # Calculate metrics
-    accuracy = accuracy_score(y_val_classes, y_pred_classes)
-    f1 = f1_score(y_val_classes, y_pred_classes, average='weighted')
-    precision = precision_score(y_val_classes, y_pred_classes, average='weighted')
-    recall = recall_score(y_val_classes, y_pred_classes, average='weighted')
-    roc_auc = roc_auc_score(y_val_fold, y_pred, multi_class='ovr')
+    accuracy = accuracy_score(y_val_classes, 
+                              y_pred_classes)
+    f1 = f1_score(y_val_classes, 
+                  y_pred_classes, 
+                  average='weighted')
+    precision = precision_score(y_val_classes, 
+                                y_pred_classes, 
+                                average='weighted')
+    recall = recall_score(y_val_classes, 
+                          y_pred_classes, 
+                          average='weighted')
+    roc_auc = roc_auc_score(y_val_fold, 
+                            y_pred, 
+                            multi_class='ovr')
 
     logging.info("Fold evaluation complete.")
 
     return accuracy, f1, precision, recall, roc_auc
 
 
-def cross_validate(X_train, y_train, n_splits=3):
+def cross_validate(
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    n_splits: int = 3
+) -> None:
     """
     Performs K-fold cross-validation and logs the results.
 
@@ -148,14 +196,19 @@ def cross_validate(X_train, y_train, n_splits=3):
         roc_aucs.append(roc_auc)
 
     # Calculate and log mean ± std for each metric
-    logging.info(f"Accuracy: {np.mean(accuracies):.4f} ± {np.std(accuracies):.4f}")
-    logging.info(f"F1 Score: {np.mean(f1_scores):.4f} ± {np.std(f1_scores):.4f}")
-    logging.info(f"Precision: {np.mean(precisions):.4f} ± {np.std(precisions):.4f}")
-    logging.info(f"Recall: {np.mean(recalls):.4f} ± {np.std(recalls):.4f}")
-    logging.info(f"ROC AUC: {np.mean(roc_aucs):.4f} ± {np.std(roc_aucs):.4f}")
+    logging.info(f"Accuracy: {np.mean(accuracies):.4f} "
+                 f"± {np.std(accuracies):.4f}")
+    logging.info(f"F1 Score: {np.mean(f1_scores):.4f} "
+                 f"± {np.std(f1_scores):.4f}")
+    logging.info(f"Precision: {np.mean(precisions):.4f} "
+                 f"± {np.std(precisions):.4f}")
+    logging.info(f"Recall: {np.mean(recalls):.4f} "
+                 f"± {np.std(recalls):.4f}")
+    logging.info(f"ROC AUC: {np.mean(roc_aucs):.4f} "
+                 f"± {np.std(roc_aucs):.4f}")
 
 
-def load_data(X_path, y_path):
+def load_data(X_path: str, y_path: str) -> tuple:
     """
     Loads training features and labels from separate CSV files.
 
@@ -171,14 +224,16 @@ def load_data(X_path, y_path):
     X_train = pd.read_csv(X_path).values
 
     logging.info(f"Loading labels from {y_path}")
-    y_train = pd.read_csv(y_path).values.ravel()  # Flatten labels to a 1D array
+    y_train = pd.read_csv(y_path).values.ravel()
 
-    logging.info(f"Data loaded successfully. Shape of X_train: {X_train.shape}, Shape of y_train: {y_train.shape}")
+    logging.info(f"Data loaded successfully. "
+                 f"Shape of X_train: {X_train.shape}, "
+                 f"Shape of y_train: {y_train.shape}")
 
     return X_train, y_train
 
 
-def main(X_path, y_path):
+def main(X_path: str, y_path: str) -> None:
     """
     Main function to run the entire training and evaluation pipeline.
 
@@ -195,9 +250,17 @@ def main(X_path, y_path):
 
 if __name__ == "__main__":
     # Set up argument parser
-    parser = argparse.ArgumentParser(description="Train and evaluate a CNN model using 3-fold cross-validation.")
-    parser.add_argument('--X_path', type=str, help="Path to the CSV file containing the training features.")
-    parser.add_argument('--y_path', type=str, help="Path to the CSV file containing the training labels.")
+    parser = argparse.ArgumentParser(
+        description=("Train and evaluate a CNN model "
+                     "using 3-fold cross-validation."))
+    parser.add_argument(
+        '--X_path',
+        type=str,
+        help="Path to the CSV file containing the training features.")
+    parser.add_argument(
+        '--y_path',
+        type=str,
+        help="Path to the CSV file containing the training labels.")
 
     # Parse arguments
     args = parser.parse_args()
