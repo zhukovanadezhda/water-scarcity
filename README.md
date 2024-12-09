@@ -20,11 +20,11 @@ The primary objective of the project is to:
 
 ## 🎯 Our Approach
 
-The target variable is categorical, with 5 balanced classes representing groundwater levels: very low, low, average, high, and very high. Since the data is balanced, no specific techniques for handling imbalanced data were necessary, and the models were trained to perform classification. 
+The target variable is categorical, with 5 balanced classes representing groundwater levels: `very low`, `low`, `average`, `high`, and `very high`. Since the data is balanced, no specific techniques for handling imbalanced data were necessary, and the models were trained to perform classification. 
 
 The data preprocessing steps included removing columns with over 80% missing values, followed by imputing the remaining missing values with either the median or mode. Feature engineering was then performed, as detailed below. All numeric features were scaled, and the target variable was encoded as integers from 0 to 4. 
 
-Subsequently, five models were trained and evaluated using 3-fold cross-validation, with results presented in the results section. The best-performing model was a random forest, which underwent grid search for hyperparameter tuning. The final F1 score of this model on the test set was 58.36%, placing the team 15th out of 60 teams.
+Subsequently, five models were trained and evaluated using 3-fold cross-validation, with results presented in the results section. The best-performing model was a `random forest`, which underwent grid search for hyperparameter tuning. The final F1 score of this model on the test set was 58.36%, placing the team 15th out of 60 teams.
 
 ### Feature Engineering
 
