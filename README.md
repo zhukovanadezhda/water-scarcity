@@ -85,6 +85,18 @@ python scripts/preprocess_data.py --path <data_file_path> [--is_train]
     --is_train    Flag to indicate training data (optional).
 ```
 
+### Models training and evaluation
+
+After the preprocessing is completed, use one of two scripts `train_cnn.py` or `train_models.py` to train and evaluate corresponding models. 
+
+```bash
+python scripts/train_cnn.py --X_path data/X_train.csv --y_path data/y_train.csv 
+```
+```bash
+    --X_path      Path to the CSV file containing the training features.
+    --y_path      Path to the CSV file containing the training labels.
+```
+
 ## 🤝 Acknowledgments
 
 - Hi! PARIS for organizing the Hi!ckathon and providing the opportunity to work on impactful sustainability challenges 🎉
