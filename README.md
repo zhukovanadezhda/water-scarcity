@@ -65,18 +65,20 @@ Subsequently, five models were trained and evaluated using 3-fold cross-validati
 
 ## 🖥️ Run the code
 
+### Set up
+
+First, clone the repository and navigate to the project folder:
+
+```bash
+git clone git@github.com:zhukovanadezhda/water-scarcity.git
+cd water-scarcity
+```
+
 To set up the environment and install the required dependencies, use the following commands:
 
 ```bash
 conda env create -f environment.yml
 conda activate water-scarcity
-```
-
-Then, clone the repository and navigate to the project folder:
-
-```bash
-git clone git@github.com:zhukovanadezhda/water-scarcity.git
-cd water-scarcity
 ```
 
 ### Preprocessing
